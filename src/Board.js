@@ -100,12 +100,12 @@ const Board = ({
 
     {
       [...Array(whiteHome)].map((_, i)=> (
-        <rect x={1420} y={25 + 25*i} height={20} width={60} className='white-home' />
+        <rect key={i} x={1420} y={25 + 25*i} height={20} width={60} className='white-home' />
       ))
     }
     {
       [...Array(blackHome)].map((_, i)=> (
-        <rect x={1420} y={955 - 25*i} height={20} width={60} className='black-home' />
+        <rect key={i} x={1420} y={955 - 25*i} height={20} width={60} className='black-home' />
       ))
     }
   </svg>

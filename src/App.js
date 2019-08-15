@@ -16,10 +16,54 @@ class App extends React.Component {
     whiteJail: 4,
     blackHome: 15,
     blackJail: 4,
+
+    turn: 'white',
+    dice: [],
   }
 
   spaceClicked = (index)=> {
     console.log(index);
+
+    // if no dice, do nothing (wait for roll)
+    
+    // if turn is in jail
+    //// if click is on valid move, this.makeMove(index) (return)
+
+    // (implicit else)
+    
+    // if no chip selected
+    //// if click is on turn's chips, select that chip (return)
+
+    // else this is a second click
+    //// if the space selected is a valid move, this.makeMove(index) (return)
+  }
+
+  makeMove = (to)=> {
+    // using this.state.selectedChip / jail as from
+
+    // remove used die from dice
+
+    // reduce a chip from the from
+    // increase a chip in the to
+    // if the to is a single opponent, move it to jail
+
+
+    // if the to is home, move there, check if game is over
+
+    // check if turn is over
+
+    // if over, compute & set next player (blockade -> same, otherwise toggle)
+  }
+
+  roll = ()=> {
+    if( this.state.dice.length ) return;
+    
+    this.setState({ dice: [ Math.random()*6 +1, Math.random()*6 +1].map(Math.floor) }, ()=>
+      this.setState({
+        dice: this.state.dice[0] === this.state.dice[1] ?
+              [...this.state.dice, ...this.state.dice] :
+              this.state.dice
+      }) );
   }
 
   render() {
@@ -28,6 +72,9 @@ class App extends React.Component {
         <Board chips={this.state.chips} onClick={this.spaceClicked}
                whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
                blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
+
+        <button onClick={this.roll}>roll</button>
+        {this.state.dice}
       </div>
     );
   }
