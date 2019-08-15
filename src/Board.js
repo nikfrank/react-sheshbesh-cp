@@ -34,6 +34,10 @@ const Board = ({
           height={1000} width={100}
           fill='#731'
       />
+    <rect x={1410} y={20}
+          height={960} width={80}
+          fill='#510'
+      />
     <rect x={660} y={0}
           height={1000} width={100}
           fill='#731'
@@ -63,7 +67,11 @@ const Board = ({
         <g key={i}>
           {[...Array(Math.abs(chip))].map((_, c)=> (
             <circle key={c} cx={centers[i]}
-                    cy={ i < 12 ? 60 + 60*c : 940 - 60*c } r={30}
+                    cy={ i < 12 ? (
+                      60 + (60 - 5*Math.max(0, Math.abs(chip)-6))*c
+                    ) : (
+                      940 - (60 - 5*Math.max(0, Math.abs(chip)-6))*c
+                    ) } r={30}
                     className={chip < 0 ? 'white-chip' : 'black-chip'}/>
           ))}
 
@@ -72,6 +80,32 @@ const Board = ({
                 fill='transparent' stroke='transparent'
                 onClick={()=> onClick(i)} />
         </g>
+      ))
+    }
+
+    {
+      [...Array(whiteJail)].map((_, i)=>(
+        <circle key={i} cx={710}
+                cy={ 60 + 60*i } r={30}
+                className='white-chip'/>
+      ))
+    }
+    {
+      [...Array(blackJail)].map((_, i)=>(
+        <circle key={i} cx={710}
+                cy={ 940 - 60*i } r={30}
+                className='black-chip'/>
+      ))
+    }
+
+    {
+      [...Array(whiteHome)].map((_, i)=> (
+        <rect x={1420} y={25 + 25*i} height={20} width={60} className='white-home' />
+      ))
+    }
+    {
+      [...Array(blackHome)].map((_, i)=> (
+        <rect x={1420} y={955 - 25*i} height={20} width={60} className='black-home' />
       ))
     }
   </svg>

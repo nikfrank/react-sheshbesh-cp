@@ -12,10 +12,10 @@ class App extends React.Component {
       -5, 0, 0, 0, 3, 0,
       5, 0, 0, 0, 0, -2,
     ],
-    whiteHome: 0,
-    whiteJail: 0,
-    blackHome: 0,
-    blackJail: 0,
+    whiteHome: 15,
+    whiteJail: 4,
+    blackHome: 15,
+    blackJail: 4,
   }
 
   spaceClicked = (index)=> {
@@ -25,7 +25,9 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Board chips={this.state.chips} onClick={this.spaceClicked} />
+        <Board chips={this.state.chips} onClick={this.spaceClicked}
+               whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
+               blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
       </div>
     );
   }
