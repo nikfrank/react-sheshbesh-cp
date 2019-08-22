@@ -46,7 +46,8 @@ const Board = ({
 
 
     {[0, 180].map(angle=> (
-      <g key={angle} style={{ transform: 'rotate('+angle+'deg)', transformOrigin:'47.33% 50%' }}>
+      <g key={angle} className={'selected-chip-'+selectedChip}
+         style={{ transform: 'rotate('+angle+'deg)', transformOrigin:'47.33% 50%' }}>
         <polygon points='25,20 125,20 75,450' className='white-triangle' />
         <polygon points='131,20 231,20 181,450' className='black-triangle' />
         <polygon points='237,20 337,20 287,450' className='white-triangle' />
