@@ -10,6 +10,7 @@ const Board = ({
   blackHome,
   whiteJail,
   blackJail,
+  selectedChip,
   chips,
   onClick,
 })=> (

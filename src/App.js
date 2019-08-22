@@ -12,30 +12,33 @@ class App extends React.Component {
       -5, 0, 0, 0, 3, 0,
       5, 0, 0, 0, 0, -2,
     ],
-    whiteHome: 15,
-    whiteJail: 4,
-    blackHome: 15,
-    blackJail: 4,
+    whiteHome: 0,
+    whiteJail: 0,
+    blackHome: 0,
+    blackJail: 0,
 
     turn: 'white',
     dice: [],
+    selectedChip: 20,
   }
 
   spaceClicked = (index)=> {
     console.log(index);
 
     // if no dice, do nothing (wait for roll)
-    
+
     // if turn is in jail
     //// if click is on valid move, this.makeMove(index) (return)
 
     // (implicit else)
-    
+
     // if no chip selected
     //// if click is on turn's chips, select that chip (return)
 
     // else this is a second click
-    //// if the space selected is a valid move, this.makeMove(index) (return)
+    //// if the space selected is a valid move, this.makeMove(index)
+    //// if another click on the selectedChip, unselect the chip
+    //// if it's a doubleClick / long press & chip can go home, makeMove(go home)
   }
 
   makeMove = (to)=> {
@@ -57,19 +60,20 @@ class App extends React.Component {
 
   roll = ()=> {
     if( this.state.dice.length ) return;
-    
-    this.setState({ dice: [ Math.random()*6 +1, Math.random()*6 +1].map(Math.floor) }, ()=>
-      this.setState({
-        dice: this.state.dice[0] === this.state.dice[1] ?
-              [...this.state.dice, ...this.state.dice] :
-              this.state.dice
-      }) );
+
+    this.setState({ dice: [ Math.random()*6 +1, Math.random()*6 +1 ].map(Math.floor) }, ()=>{
+      if( this.state.dice[0] === this.state.dice[1] )
+        this.setState({
+          dice: [...this.state.dice, ...this.state.dice],
+        });
+    })
   }
 
   render() {
     return (
       <div className="App">
         <Board chips={this.state.chips} onClick={this.spaceClicked}
+               selectedChip={this.state.selectedChip}
                whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
                blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
 
