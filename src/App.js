@@ -3,6 +3,8 @@ import './App.css';
 
 import Board from './Board';
 
+import { calculateLegalMoves } from './util';
+
 class App extends React.Component {
 
   state = {
@@ -113,27 +115,13 @@ class App extends React.Component {
 
     // if the to is home, move there, check if game is over
 
-    // check if turn is over
-    let nextTurn = this.state.turn;
-
-    if( !nextDice.length ) nextTurn = ({ black: 'white', white: 'black' })[this.state.turn];
-
-    // also need to check if no more legal moves
-    //// if we're in Jail
-    ////// if all dice we have lead to blocked spaces (nextTurn = other)
-    //// else
-    ////// if all dice we have, for all the chips we have lead to blocked spaces
-
-    // if over, compute & set next player (blockade -> same, otherwise toggle)
-
     this.setState({
       dice: nextDice,
-      turn: nextTurn,
       chips: nextChips,
       whiteJail: nextWhiteJail,
       blackJail: nextBlackJail,
       selectedChip: null,
-    });
+    }, this.checkTurnOver);
   }
 
   roll = ()=> {
@@ -143,8 +131,18 @@ class App extends React.Component {
       if( this.state.dice[0] === this.state.dice[1] )
         this.setState({
           dice: [...this.state.dice, ...this.state.dice],
-        });
+        }, this.checkTurnOver);
     })
+  }
+
+  checkTurnOver = ()=>{
+    const legalMoves = calculateLegalMoves(
+      this.state.chips, this.state.dice, this.state.turn
+    );
+
+    if( !legalMoves.length ) this.setState({
+      turn: ({ black: 'white', white: 'black' })[this.state.turn],
+    });
   }
 
   render() {
