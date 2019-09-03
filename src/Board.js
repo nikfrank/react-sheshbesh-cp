@@ -45,26 +45,39 @@ const Board = ({
           fill='#731'
     />
 
-
     {[0, 180].map(angle=> (
       <g key={angle} className={'selected-chip-'+selectedChip}
          style={{ transform: 'rotate('+angle+'deg)', transformOrigin:'47.33% 50%' }}>
-        <polygon points='25,20 125,20 75,450' className='white-triangle' />
-        <polygon points='131,20 231,20 181,450' className='black-triangle' />
-        <polygon points='237,20 337,20 287,450' className='white-triangle' />
-        <polygon points='343,20 443,20 393,450' className='black-triangle' />
-        <polygon points='449,20 549,20 499,450' className='white-triangle' />
-        <polygon points='555,20 655,20 605,450' className='black-triangle' />
-
-        <polygon points='765,20 865,20 815,450' className='white-triangle' />
-        <polygon points='871,20 971,20 921,450' className='black-triangle' />
-        <polygon points='977,20 1077,20 1027,450' className='white-triangle' />
-        <polygon points='1083,20 1183,20 1133,450' className='black-triangle' />
-        <polygon points='1189,20 1289,20 1239,450' className='white-triangle' />
-        <polygon points='1295,20 1395,20 1345,450' className='black-triangle' />
+        {[...Array(12)].map((_, i)=>(
+          <polygon key={i}
+                   points={`${centers[i]-50},20 ${centers[i]+50},20 ${centers[i]},450`}
+                   className={(i%2 ? 'black' : 'white')+'-triangle'} />
+        ))}
       </g>
     ))}
 
+    {
+      chips.map((chip, i)=> (
+        <g key={i}>
+          {[...Array(Math.abs(chip))].map((_, c)=> (
+            <circle key={c} cx={centers[i]}
+                    cy={ i < 12 ? (
+                        60 + (60 - 5*Math.max(0, Math.abs(chip)-6))*c
+                    ) : (
+                        940 - (60 - 5*Math.max(0, Math.abs(chip)-6))*c
+                    ) } r={30}
+                    className={chip < 0 ? 'white-chip' : 'black-chip'}/>
+          ))}
+        </g>
+      ))
+    }
+
+  </svg>
+);
+
+export default Board;
+
+/*
     {
       chips.map((chip, i)=> (
         <g key={i}>
@@ -116,3 +129,4 @@ const Board = ({
 );
 
 export default Board;
+//*/
