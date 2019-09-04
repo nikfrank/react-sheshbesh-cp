@@ -79,12 +79,6 @@ const Board = ({
       ))
     }
 
-  </svg>
-);
-
-export default Board;
-
-/*
 
     {
       [...Array(whiteJail)].map((_, i)=>(

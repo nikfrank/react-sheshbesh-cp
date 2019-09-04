@@ -1,7 +1,13 @@
+export const calculateBoardOutcomes = (
+  chips, blackJail, whiteJail, blackHome, whiteHome
+)=> {
+
+};
+
 export const calculateLegalMoves = (chips, dice, turn, whiteJail, blackJail)=>{
 
   const direction = turn === 'black' ? 1 : -1;
-  
+
   if( !dice.length ) return [];
 
   //// if we're in Jail
@@ -11,12 +17,12 @@ export const calculateLegalMoves = (chips, dice, turn, whiteJail, blackJail)=>{
     // check if 23-18 are legal moves by dice
     return dice.filter(die => ( chips[ 24 - die ] <= 1 ))
                .map(die => ({ moveFrom: 'whiteJail', moveTo: 24 - die }) );
-    
+
   } else if( (turn === 'black') && (blackJail > 0) ){
     // check if 0-5 are legal moves by dice
     return dice.filter(die => ( chips[ die - 1 ] >= -1 ))
                .map(die => ({ moveFrom: 'blackJail', moveTo: die - 1 }) );
-    
+
   } else {
     // if all dice we have, for all the chips we have, check if it's open
 
@@ -31,7 +37,7 @@ export const calculateLegalMoves = (chips, dice, turn, whiteJail, blackJail)=>{
             (chips[ i + direction * die ] * direction >= -1)
           )).map(die => ({ moveFrom: i, moveTo: i + direction * die }))
         ];
-        
+
       }
     }
 
@@ -54,7 +60,7 @@ export const calculateLegalMoves = (chips, dice, turn, whiteJail, blackJail)=>{
         (dice.filter(die => ((die >= furthestPiece) && (spot+1 === furthestPiece))).length)
       )
     )).map(spot => ({ moveFrom: spot, moveTo: 'whiteHome' })
-      
+
     ) : [23, 22, 21, 20, 19, 18].filter(spot=> (
       (chips[spot] > 0) && (
         (dice.filter(die => die === 24-spot).length) ||
@@ -62,7 +68,7 @@ export const calculateLegalMoves = (chips, dice, turn, whiteJail, blackJail)=>{
       )
     )).map(spot => ({ moveFrom: spot, moveTo: 'blackHome' }))
 
-    
+
     return [
       ...legalMoves,
       ...legalHomeMoves,
@@ -75,10 +81,10 @@ export const calculateLegalMoves = (chips, dice, turn, whiteJail, blackJail)=>{
           chips[ i + direction * die ] * direction >= -1
         )).map(die => ({ moveFrom: i, moveTo: i + direction * die }))
       ], []);
-    
-    
+
+
     // if all pieces are near home, calculate also moves to home
   }
 
-  
+
 };
