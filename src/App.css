@@ -1,7 +1,56 @@
+body {
+  overflow: hidden;
+}
+
 .Board {
   max-height: 100vh;
   max-width: 100vw;
 }
+
+.game-container {
+  margin: 0 auto;
+  height: 100vh;
+  max-height: 66.666vw;
+  width: 150vh;
+  max-width: 100vw;
+  position: relative;
+}
+
+.dice-container {
+  position: absolute;
+  height: 100px;
+  top: calc( 50% - 50px );
+
+  width: 100px;
+  left: calc( 47.33% - 50px );
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.dice-container button {
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px;
+  outline: none;
+  font-weight: 900;
+}
+
+.die {
+  height: 40px;
+  width: 40px;
+  margin: 3px;
+}
+
+.die rect {
+  fill: white;
+  stroke: black;
+  stroke-width: 4px;
+}
+
 
 .white-triangle {
   stroke: black;

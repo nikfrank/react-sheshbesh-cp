@@ -68,6 +68,13 @@ const Board = ({
                     ) } r={30}
                     className={chip < 0 ? 'white-chip' : 'black-chip'}/>
           ))}
+
+          <rect x={centers[i] - 50} width={100}
+                y={ i < 12 ? 20 : 550 } height={430}
+                fill='transparent' stroke='transparent'
+                onDoubleClick={()=> onDoubleClick(i)}
+                onClick={()=> onClick(i)} />
+
         </g>
       ))
     }
@@ -78,27 +85,6 @@ const Board = ({
 export default Board;
 
 /*
-    {
-      chips.map((chip, i)=> (
-        <g key={i}>
-          {[...Array(Math.abs(chip))].map((_, c)=> (
-            <circle key={c} cx={centers[i]}
-                    cy={ i < 12 ? (
-                        60 + (60 - 5*Math.max(0, Math.abs(chip)-6))*c
-                    ) : (
-                        940 - (60 - 5*Math.max(0, Math.abs(chip)-6))*c
-                    ) } r={30}
-                    className={chip < 0 ? 'white-chip' : 'black-chip'}/>
-          ))}
-
-          <rect x={centers[i] - 50} width={100}
-                y={ i < 12 ? 20 : 550 } height={430}
-                fill='transparent' stroke='transparent'
-                onDoubleClick={()=> onDoubleClick(i)}
-                onClick={()=> onClick(i)} />
-        </g>
-      ))
-    }
 
     {
       [...Array(whiteJail)].map((_, i)=>(

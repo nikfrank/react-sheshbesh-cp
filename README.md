@@ -59,7 +59,9 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Board />
+        <div className='game-container'>
+          <Board />
+        </div>
       </div>
     );
   }
@@ -227,9 +229,11 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Board chips={this.state.chips}
-               whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
-               blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
+        <div className='game-container'>
+          <Board chips={this.state.chips}
+                 whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
+                 blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
+        </div>
       </div>
     );
   }
@@ -373,7 +377,343 @@ our users will want to make moves and play the game, and have a comfortable time
 
 to make things easy, let's make some transparent rectangles above each of the spaces on the board for them to click
 
+we'll collect single and double click events (we'll use the double clicks to move a piece home when that's allowed)
 
+
+<sub>./src/Board.js</sub>
+```js
+//...
+
+    {
+      chips.map((chip, i)=> (
+        <g key={i}>
+          {[...Array(Math.abs(chip))].map((_, c)=> (
+            <circle key={c} cx={centers[i]}
+                    cy={ i < 12 ? (
+                        60 + (60 - 5*Math.max(0, Math.abs(chip)-6))*c
+                    ) : (
+                        940 - (60 - 5*Math.max(0, Math.abs(chip)-6))*c
+                    ) } r={30}
+                    className={chip < 0 ? 'white-chip' : 'black-chip'}/>
+          ))}
+
+          <rect x={centers[i] - 50} width={100}
+                y={ i < 12 ? 20 : 550 } height={430}
+                fill='transparent' stroke='transparent'
+                onDoubleClick={()=> onDoubleClick(i)}
+                onClick={()=> onClick(i)} />
+
+        </g>
+      ))
+    }
+
+//...
+```
+
+<sub>./src/App.js</sub>
+```js
+
+//...
+
+  spaceClicked = (index)=> {
+    console.log('click', index);
+  }
+
+  spaceDoubleClicked = (index)=> {
+    console.log('double click', index);
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div className='game-container'>
+          <Board chips={this.state.chips}
+                 onClick={this.spaceClicked}
+                 onDoubleClick={this.spaceDoubleClicked}
+                 whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
+                 blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
+        </div>
+      </div>
+    );
+  }
+}
+
+//...
+```
+
+now we can start thinking through the logic of the game
+
+
+### taking turns
+
+we'll need a few more values in our `state` to keep track of the dice and whose turn it is
+
+<sub>./src/App.js</sub>
+```js
+//...
+
+  state = {
+    chips: [...initBoard],
+    whiteHome: 0,
+    whiteJail: 0,
+    blackHome: 0,
+    blackJail: 0,
+
+    turn: 'black',
+    dice: [],
+    selectedChip: null,
+  }
+
+//...
+```
+
+we'll also keep track of whether there's a chip selected (which we'll use when we start trying to move the pieces around)
+
+now we should give the user a way to roll the dice so we can start playing
+
+
+#### rolling dice
+
+let's make a button and position it nicely in the middle of the Board
+
+<sub>./src/App.js</sub>
+```js
+//...
+        <Board .../>
+
+        <div className='dice-container'>
+          {!this.state.dice.length ? (
+             <button onClick={this.roll}>roll</button>
+          ) : this.state.dice}
+        </div>
+
+//...
+```
+
+<sub>./src/App.css</sub>
+```css
+.App {
+  position: relative;
+}
+
+.dice-container {
+  position: absolute;
+  height: 100px;
+  top: calc( 50% - 50px );
+
+  width: 100px;
+  left: calc( 47.33% - 50px );
+}
+```
+
+and our roll function (instance method)
+
+<sub>./src/App.js</sub>
+```js
+  roll = ()=> {
+    if( this.state.dice.length ) return;
+
+    this.setState({
+      dice: [ Math.random()*6 +1, Math.random()*6 +1 ].map(Math.floor)
+    })
+  }
+```
+
+now we should be able to roll the dice once
+
+we'll see that we need to do something about doubles!
+
+we should give player 4 dice when they roll doubles...
+
+
+<sub>./src/App.js</sub>
+```js
+  roll = ()=> {
+    if( this.state.dice.length ) return;
+
+    this.setState({
+      dice: [ Math.random()*6 +1, Math.random()*6 +1 ].map(Math.floor)
+    }, ()=>{
+      if( this.state.dice[0] === this.state.dice[1] )
+        this.setState({
+          dice: [...this.state.dice, ...this.state.dice],
+        });
+    })
+  }
+```
+
+here we're using the [setState callback](https://medium.com/better-programming/when-to-use-callback-function-of-setstate-in-react-37fff67e5a6c) to check the dice once we've made them, and update the `state` if it's doubles
+
+
+now let's take a break from our busy lives to make a happy little component that draws dice on the screen.
+
+
+`$ touch src/Dice.js`
+
+<sub>./src/Dice.js</sub>
+```js
+import React from 'react';
+
+const Dice = ({ dice })=>
+  dice.map((die, i)=> (
+    <svg viewBox='0 0 100 100' key={i} className='die'>
+      <rect x={0} y={0} height={100} width={100} rx={12}/>
+
+      {die === 1 ? (
+         <circle cx={50} cy={50} r={10} />
+      ): die === 2 ? (
+         <g>
+           <circle cx={33} cy={33} r={10} />
+           <circle cx={67} cy={67} r={10} />
+         </g>
+      ): die === 3 ? (
+         <g>
+           <circle cx={33} cy={33} r={10} />
+           <circle cx={50} cy={50} r={10} />
+           <circle cx={67} cy={67} r={10} />
+         </g>
+      ): die === 4 ? (
+        <g>
+          <circle cx={33} cy={33} r={10} />
+          <circle cx={33} cy={67} r={10} />
+          <circle cx={67} cy={33} r={10} />
+          <circle cx={67} cy={67} r={10} />
+        </g>
+      ): die === 5 ? (
+        <g>
+          <circle cx={33} cy={33} r={10} />
+          <circle cx={33} cy={67} r={10} />
+          <circle cx={67} cy={33} r={10} />
+          <circle cx={50} cy={50} r={10} />
+          <circle cx={67} cy={67} r={10} />
+        </g>
+      ): die === 6 ? (
+        <g>
+          <circle cx={33} cy={33} r={10} />
+          <circle cx={33} cy={50} r={10} />
+          <circle cx={33} cy={67} r={10} />
+          <circle cx={67} cy={33} r={10} />
+          <circle cx={67} cy={50} r={10} />
+          <circle cx={67} cy={67} r={10} />
+        </g>
+      ): null}
+    </svg>
+  ));
+
+export default Dice;
+```
+
+<sub>./src/App.js</sub>
+```js
+//...
+
+import Dice from './Dice';
+
+//...
+
+
+          <div className='dice-container'>
+            {!this.state.dice.length ? (
+               <button onClick={this.roll}>roll</button>
+            ) : (
+               <Dice dice={this.state.dice} />
+            )}
+          </div>
+
+
+```
+
+and of course, we'll want to center them on the screen
+
+
+<sub>./src/App.css</sub>
+```css
+body {
+  overflow: hidden;
+}
+
+.Board {
+  max-height: 100vh;
+  max-width: 100vw;
+}
+
+.game-container {
+  margin: 0 auto;
+  height: 100vh;
+  max-height: 66.666vw;
+  width: 150vh;
+  max-width: 100vw;
+  position: relative;
+}
+
+.dice-container {
+  position: absolute;
+  height: 100px;
+  top: calc( 50% - 50px );
+
+  width: 100px;
+  left: calc( 47.33% - 50px );
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.die {
+  height: 40px;
+  width: 40px;
+  margin: 3px;
+}
+
+.die rect {
+  fill: white;
+  stroke: black;
+  stroke-width: 4px;
+}
+
+.dice-container button {
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px;
+  outline: none;
+  font-weight: 900;
+}
+
+//...
+```
+
+
+#### selecting a piece
+
+
+### moving a piece
+
+#### calculate legal moves
+
+#### calculate board after move
+
+### captures
+
+### ending the turn (blockades)
+
+### moving home
+
+### ending the game
+
+
+
+<a name="step2"></a>
+## step 2: Build a computer player for 1-player local game
+
+
+<a name="step3"></a>
+## step 3: Build a game server with google oauth verification
+
+
+<a name="step4"></a>
+## step 4: Deploy the solution to Heroku
 
 
 

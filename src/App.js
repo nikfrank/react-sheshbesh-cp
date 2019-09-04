@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 
 import Board from './Board';
+import Dice from './Dice';
 
 import { calculateLegalMoves } from './util';
 
@@ -41,7 +42,7 @@ class App extends React.Component {
       if( (this.state.turn === 'white') && !this.state.dice.includes(24-index) ) return;
 
       if( (this.state.chips[index] * direction >= 0) ||
-           (Math.abs(this.state.chips[index]) === 1) ){
+          (Math.abs(this.state.chips[index]) === 1) ){
 
         this.makeMove(index);
       }
@@ -64,7 +65,7 @@ class App extends React.Component {
       //// if the space selected is a valid move, this.makeMove(index)
       if( this.state.dice.includes(direction * (index - this.state.selectedChip)) ){
         if( (this.state.chips[index] * direction >= 0) ||
-             Math.abs(this.state.chips[index]) === 1 ){
+            Math.abs(this.state.chips[index]) === 1 ){
           this.makeMove(index);
         }
       }
@@ -122,8 +123,8 @@ class App extends React.Component {
 
     // remove used die from dice
     const usedDie = (this.state.selectedChip !== null) ?
-      direction * (to - this.state.selectedChip) :
-      this.state.turn === 'white' ? 24 - to : to + 1;
+                    direction * (to - this.state.selectedChip) :
+                    this.state.turn === 'white' ? 24 - to : to + 1;
 
     let nextDice = [
       ...this.state.dice.slice( 0, this.state.dice.indexOf(usedDie) ),
@@ -176,6 +177,7 @@ class App extends React.Component {
     })
   }
 
+
   checkTurnOver = ()=>{
     if( this.state.whiteHome === 15 ) console.log('white wins');
     if( this.state.blackHome === 15 ) console.log('black wins');
@@ -194,15 +196,22 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Board chips={this.state.chips}
-               onClick={this.spaceClicked}
-               onDoubleClick={this.spaceDoubleClicked}
-               selectedChip={this.state.selectedChip}
-               whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
-               blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
+        <div className='game-container'>
+          <Board chips={this.state.chips}
+                 onClick={this.spaceClicked}
+                 onDoubleClick={this.spaceDoubleClicked}
+                 selectedChip={this.state.selectedChip}
+                 whiteJail={this.state.whiteJail} whiteHome={this.state.whiteHome}
+                 blackJail={this.state.blackJail} blackHome={this.state.blackHome} />
 
-        <button onClick={this.roll}>roll</button>
-        {this.state.dice}
+          <div className='dice-container'>
+            {!this.state.dice.length ? (
+               <button onClick={this.roll}>roll</button>
+            ) : (
+               <Dice dice={this.state.dice} />
+            )}
+          </div>
+        </div>
       </div>
     );
   }
