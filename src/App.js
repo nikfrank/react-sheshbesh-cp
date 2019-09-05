@@ -187,20 +187,33 @@ class App extends React.Component {
 
 
   checkTurnOver = ()=>{
-    if( this.state.whiteHome === 15 ) console.log('white wins');
-    if( this.state.blackHome === 15 ) console.log('black wins');
+    if( (this.state.whiteHome === 15 ) || ( this.state.blackHome === 15 )){
+      setTimeout(()=> this.setState({
+        chips: [...initBoard],
+        whiteHome: 0,
+        whiteJail: 0,
+        blackHome: 0,
+        blackJail: 0,
+
+        dice: [],
+        selectedChip: null,
+      }), 2000);
+      
+      return;
+    }
 
     const legalMoves = calculateLegalMoves(
       this.state.chips, this.state.dice, this.state.turn,
       this.state.whiteJail, this.state.blackJail
     );
 
-    if( !legalMoves.length ) this.setState({
-      turn: ({ black: 'white', white: 'black' })[this.state.turn],
-      dice: [],
-    }, ()=> {
-      if( this.state.turn === this.state.cp ) this.cpRoll();
-    });
+    if( !legalMoves.length ) setTimeout(()=>
+      this.setState({
+        turn: ({ black: 'white', white: 'black' })[this.state.turn],
+        dice: [],
+      }, ()=> {
+        if( this.state.turn === this.state.cp ) this.cpRoll();
+      }), this.state.dice.length * 1000);
 
     return legalMoves.length;
   }

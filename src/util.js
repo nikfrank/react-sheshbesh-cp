@@ -30,18 +30,24 @@ export const scoreBoard = (board)=>{
 
   const blackBlocks = chips.filter((chip, i)=> (chip > 1) && (i < furthestWhite)).length;
   const whiteBlocks = chips.filter((chip, i)=> (chip < -1) && (i > furthestBlack)).length;
+
+  const blackShneid = Math.max(0, chips[0]);
+  const whiteShneid = Math.min(0, chips[23]);
   
   return (
     blackHome * 15 -
     whiteHome * 15 -
     blackPips +
     whitePips -
-    blackJail * 35 +
-    whiteJail * 35 -
+    blackJail * 38 +
+    whiteJail * 38 -
     blackVun * 10 +
     whiteVun * 10 +
     blackBlocks * 4 -
-    whiteBlocks * 4
+    whiteBlocks * 4 -
+    blackShneid * 17 -
+    whiteShneid * 17
+    
   );
 }
 
